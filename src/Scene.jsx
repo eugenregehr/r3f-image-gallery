@@ -1,14 +1,16 @@
 import { Canvas } from '@react-three/fiber'
-import { MeshReflectorMaterial, Environment } from '@react-three/drei'
+import { MeshReflectorMaterial, Environment,  OrbitControls } from '@react-three/drei'
 import Frames from './components/Frames.jsx'
+import Welcome from './components/Welcome.jsx'
 
 export default function Scene({ images }) {
 
   return (
   <Canvas dpr={[1, 1.5]} camera={{ fov: 70, position: [0, 2, 15] }}>
-    <color attach="background" args={['#191920']} />
-    <fog attach="fog" args={['#191920', 0, 15]} />
+    <color attach="background" args={['#222222']} />
+    <fog attach="fog" args={['#222222', 0, 15]} />
     <group position={[0, -0.5, 0]}>
+      <Welcome />
       <Frames images={images} />
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[50, 50]} />
@@ -31,3 +33,4 @@ export default function Scene({ images }) {
   </Canvas>
   )
 }
+

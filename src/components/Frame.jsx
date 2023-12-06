@@ -6,7 +6,7 @@ import * as THREE from 'three'
 import { easing } from 'maath'
 
 
-export default function Frame({ url, title, ratio, c = new THREE.Color(), ...props }) {
+export default function Frame({ url, title, landscape, ratio, c = new THREE.Color(), ...props }) {
     const image = useRef()
     const frame = useRef()
     const [, params] = useRoute('/:id')
@@ -19,13 +19,13 @@ export default function Frame({ url, title, ratio, c = new THREE.Color(), ...pro
         easing.damp3(image.current.scale, [0.85 * (!isActive && hovered ? 0.95 : 1), 0.9 * (!isActive && hovered ? 0.97 : 1), 1], 0.1, dt)
     })
     return (
-        <group {...props} ratio={ratio}>
+        <group {...props} ratio={ratio} landscape={landscape}>
             <mesh
                 name={title}
                 onPointerOver={(e) => (e.stopPropagation(), hover(true))}
                 onPointerOut={() => hover(false)}
-                scale={[1, ratio, 0.05]}
-                position={[0, ratio / 2, 0]}>
+                scale={landscape ? [ratio, 1, 0.05] :  [1, ratio, 0.05]}
+                position={landscape ? [0, 0.5, 0] : [0, ratio / 2, 0]}>
                 <boxGeometry />
                 <meshStandardMaterial color="#151515" metalness={0.5} roughness={0.5} envMapIntensity={2} />
                 <mesh ref={frame} raycast={() => null} scale={[0.9, 0.93, 0.9]} position={[0, 0, 0.2]}>
@@ -34,7 +34,7 @@ export default function Frame({ url, title, ratio, c = new THREE.Color(), ...pro
                 </mesh>
                 <Image raycast={() => null} ref={image} position={[0, 0, 0.7]} url={url} />
             </mesh>
-            <Text maxWidth={0.1} anchorX="left" anchorY="top" position={[0.55, ratio, 0]} fontSize={0.025}>
+            <Text maxWidth={0.1} anchorX="left" anchorY="top" position={landscape ? [ratio / 2 + 0.05, 1, 0] : [0.55, ratio, 0] } fontSize={0.025}>
                 {title}
             </Text>
         </group>
