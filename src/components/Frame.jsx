@@ -1,14 +1,15 @@
-import { Image, Plane, Text, useCursor } from "@react-three/drei"
+import { Image, Plane, Text, useCursor, useVideoTexture } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
-import { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { useRoute } from "wouter"
 import * as THREE from 'three'
 import { motion } from "framer-motion-3d"
 import { easing } from 'maath'
 
 
-export default function Frame({ url, title, landscape, ratio, c = new THREE.Color(), ...props }) {
-    const image = useRef()
+export default function Frame({ url, title, video, landscape, ratio, c = new THREE.Color(), ...props }) {
+    const imageRef = useRef()
+    const videoRef = useRef()
     const frame = useRef()
     const [, params] = useRoute('/:id')
     const [hovered, hover] = useState(false)
@@ -23,8 +24,13 @@ export default function Frame({ url, title, landscape, ratio, c = new THREE.Colo
         window.innerWidth <= 768 ? setIsMobile(true) : setIsMobile(false)
     }, [])
     useFrame((state, dt) => {
-        image.current.material.zoom = 2 + Math.sin(rnd * 10000 + state.clock.elapsedTime / 3) / 2
-        easing.damp3(image.current.scale, [0.85 * (!isActive && hovered ? 0.95 : 1), 0.9 * (!isActive && hovered ? 0.97 : 1), 1], 0.1, dt)
+        if (!video) {
+            imageRef.current.material.zoom = 2 + Math.sin(rnd * 10000 + state.clock.elapsedTime / 3) / 2
+            easing.damp3(imageRef.current.scale, [0.85 * (!isActive && hovered ? 0.95 : 1), 0.9 * (!isActive && hovered ? 0.97 : 1), 1], 0.1, dt)
+        } else {
+            videoRef.current.material.zoom = 2 + Math.sin(rnd * 10000 + state.clock.elapsedTime / 3) / 2
+            easing.damp3(videoRef.current.scale, [0.88 * (!isActive && hovered ? 0.94 : 1), 0.9 * (!isActive && hovered ? 0.94 : 1), 1], 0.1, dt)
+        }
     })
 
     useEffect(() => {
@@ -82,7 +88,9 @@ export default function Frame({ url, title, landscape, ratio, c = new THREE.Colo
                     <boxGeometry />
                     <meshBasicMaterial toneMapped={false} fog={false} />
                 </mesh>
-                <Image raycast={() => null} ref={image} position={[0, 0, 0.7]} url={url} />
+                {video ?
+                    <Video videoRef={videoRef} src={url} position={[0, 0, 0.7]} /> :
+                    <Image raycast={() => null} ref={imageRef} position={[0, 0, 0.7]} url={url} />}
             </mesh>
 
             <motion.group
@@ -107,5 +115,21 @@ export default function Frame({ url, title, landscape, ratio, c = new THREE.Colo
 
             </motion.group>
         </group>
+    )
+}
+
+const VideoMaterial = ({ src }) => {
+    const texture = useVideoTexture(src)
+    return <meshBasicMaterial map={texture} toneMapped={false} />
+}
+
+const Video = ({ position, src, scale, videoRef }) => {
+    return (
+        <mesh raycast={() => null} position={position} scale={scale} ref={videoRef}>
+            <planeGeometry />
+            <React.Suspense fallback={<meshBasicMaterial wireframe />}>
+                <VideoMaterial src={src} />
+            </React.Suspense>
+        </mesh>
     )
 }
