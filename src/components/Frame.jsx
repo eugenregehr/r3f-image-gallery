@@ -16,6 +16,8 @@ export default function Frame({ url, title, landscape, ratio, c = new THREE.Colo
     const titleUrl = encodeURIComponent(title)
     const isActive = params?.id === titleUrl
     const [isMobile, setIsMobile] = useState(null)
+    const [animationState, setAnimationState] = useState('hidden');
+
     useCursor(hovered)
     useEffect(() => {
         window.innerWidth <= 768 ? setIsMobile(true) : setIsMobile(false)
@@ -24,19 +26,51 @@ export default function Frame({ url, title, landscape, ratio, c = new THREE.Colo
         image.current.material.zoom = 2 + Math.sin(rnd * 10000 + state.clock.elapsedTime / 3) / 2
         easing.damp3(image.current.scale, [0.85 * (!isActive && hovered ? 0.95 : 1), 0.9 * (!isActive && hovered ? 0.97 : 1), 1], 0.1, dt)
     })
+
+    useEffect(() => {
+        isActive ? setAnimationState("visible") : setAnimationState('hidden')
+    }, [isActive])
+
     const variants = {
         hidden: {
             x: isMobile ? -0.25 : 0,
             y: isMobile ? landscape ? 1 : ratio : landscape ? 1 : ratio,
+            z: 0,
+            transition: {
+                duration: 1,
+                delay: 0,
+                ease: [0, 0.5, 0.2, 1.01]
+            }
         },
         visible: {
             x: isMobile ? -0.25 : landscape ? ratio / 2 + 0.05 : 0.55,
             y: isMobile ? landscape ? 1.45 : ratio + 0.45 : landscape ? 1 : ratio,
+            z: 0,
+            transition: {
+                duration: 1,
+                delay: 0,
+                ease: [0, 0.5, 0.2, 1.01]
+            }
         },
+        infront: {
+            x: -0.25,
+            y: landscape ? ratio / 2 : ratio - 0.75,
+            z: 0.8,
+            transition: {
+                duration: 1,
+                delay: 0,
+                ease: [0, 0.5, 0.2, 1.01]
+            }
+        }
+    }
+    const handleClick = (e) => {
+        e.stopPropagation()
+        isMobile && setAnimationState(anim => anim == 'visible' ? 'infront' : 'visible')
     }
     return (
         <group {...props} ratio={ratio} landscape={landscape}>
             <mesh
+                // visible={false}
                 name={titleUrl}
                 onPointerOver={(e) => (e.stopPropagation(), hover(true))}
                 onPointerOut={() => hover(false)}
@@ -50,26 +84,23 @@ export default function Frame({ url, title, landscape, ratio, c = new THREE.Colo
                 </mesh>
                 <Image raycast={() => null} ref={image} position={[0, 0, 0.7]} url={url} />
             </mesh>
+
             <motion.group
                 initial="hidden"
-                animate={isActive ? "visible" : 'hidden'}
+                animate={animationState}
                 variants={variants}
-                transition={{
-                    duration: 1,
-                    delay: 0.5,
-                    ease: [0, 0.5, 0.2, 1.01]
-                }}
+                onClick={handleClick}
             >
                 <group position={[0.03, -0.03, 0.01]}>
-                    <Text raycast={() => null} maxWidth={0.4} anchorX="left" anchorY="top" position={[0, 0, 0]} fontSize={0.035}>
+                    <Text onClick={handleClick} maxWidth={0.4} anchorX="left" anchorY="top" position={[0, 0, 0]} fontSize={0.035}>
                         {title}
                     </Text>
-                    <Text raycast={() => null} maxWidth={0.4} anchorX="left" anchorY="top" position={[0, -0.06, 0]} fontSize={0.025} lineHeight={1.5}>
+                    <Text onClick={handleClick} maxWidth={0.4} anchorX="left" anchorY="top" position={[0, -0.06, 0]} fontSize={0.025} lineHeight={1.5}>
                         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
                     </Text>
                 </group>
 
-                <mesh position={[0.25, -0.2, 0]} raycast={() => null} >
+                <mesh position={[0.25, -0.2, 0]} onClick={handleClick}>
                     <planeGeometry args={[0.5, 0.4]} />
                     <motion.meshBasicMaterial color={'#151515'} />
                 </mesh>
