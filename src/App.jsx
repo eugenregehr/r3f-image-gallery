@@ -17,7 +17,6 @@ const images = [
   { title: 'Picture 6', ratio: 1.2, landscape: false, position: [1.75, 0, -2], rotation: [0, 0, 0], url: pexel(227675), video: false },
   { title: 'Picture 7', ratio: 1.4, landscape: false, position: [-1.75, 0, -2], rotation: [0, 0, 0], url: pexel(327482), video: false },
 
-
   // Back
   { title: 'Picture 8', ratio: 1, landscape: false, position: [-1, 0, -4], rotation: [0, 0, 0], url: pexel(416430), video: false },
   { title: 'Picture 9', ratio: 1.4, landscape: true, position: [1, 0, -4], rotation: [0, 0, 0], url: pexel(310452), video: false },
