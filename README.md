@@ -1,8 +1,11 @@
-# React + Vite
+# A minimalistic 3D Gallery build with WebGL & React 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is inspired by the [R3F MeshReflectorMaterial example](https://codesandbox.io/p/sandbox/image-gallery-lx2h8?file=%2Fsrc%2Fstyles.css)
 
-Currently, two official plugins are available:
+## Additional Features
+- arrow / home navigation
+- routing 
+- description for each item
+- option to post video instead image
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Feel free to use and adapt it as you wish! :)
